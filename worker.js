@@ -271,11 +271,26 @@ async function handleChat(request, env) {
                     if (part.type === 'text') {
                         messageText += part.text;
                     } else if (part.type === 'image_url') {
-                        fileDescriptors.push({
-                            id: `img_${Date.now()}_${Math.random().toString(36).slice(2)}`,
-                            type: 'image',
-                            url: part.image_url.url
-                        });
+                        const url = part.image_url.url;
+                        
+                        // 检测是否为 Base64 图片
+                        if (url.startsWith('data:image/')) {
+                            // 方案 1: 跳过 Base64 图片（暂不支持）
+                            if (isWebUI) {
+                                await writer.write(encoder.encode(
+                                    `data: ${JSON.stringify({ debug: "⚠️ 检测到 Base64 图片，上游 API 暂不支持，已忽略" })}\n\n`
+                                ));
+                            }
+                            // 可选：在消息中添加提示
+                            messageText += "\n[注：已忽略一张 Base64 编码的图片]";
+                        } else {
+                            // HTTP(S) URL 图片正常处理
+                            fileDescriptors.push({
+                                id: `img_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+                                type: 'image',
+                                url: url
+                            });
+                        }
                     }
                 }
             } else {

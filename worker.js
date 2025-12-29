@@ -261,19 +261,53 @@ async function handleChat(request, env) {
             const sessionData = await sessionRes.json();
             const sessionId = sessionData.chat_session_id || sessionData.id;
 
-            // 4. 发送消息
+            // 4. 发送消息（支持多模态）
+            const lastMessage = body.messages.at(-1);
+            let messageText = "";
+            let fileDescriptors = [];
+            
+            if (Array.isArray(lastMessage.content)) {
+                for (const part of lastMessage.content) {
+                    if (part.type === 'text') {
+                        messageText += part.text;
+                    } else if (part.type === 'image_url') {
+                        fileDescriptors.push({
+                            id: `img_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+                            type: 'image',
+                            url: part.image_url.url
+                        });
+                    }
+                }
+            } else {
+                messageText = lastMessage.content;
+            }
+            
             const chatRes = await fetch(`${CONFIG.UPSTREAM_API}/chat/send-message`, {
                 method: 'POST',
                 headers: bizHeaders,
                 body: JSON.stringify({
                     chat_session_id: sessionId,
-                    message: body.messages.at(-1).content,
+                    message: messageText,
                     parent_message_id: null,
-                    file_descriptors: [],
+                    file_descriptors: fileDescriptors,
                     search_doc_ids: [],
                     retrieval_options: {}
                 })
             });
+
+            // 4. 发送消息
+            // const chatRes = await fetch(`${CONFIG.UPSTREAM_API}/chat/send-message`, {
+            //     method: 'POST',
+            //     headers: bizHeaders,
+            //     body: JSON.stringify({
+            //         chat_session_id: sessionId,
+            //         message: body.messages.at(-1).content,
+            //         parent_message_id: null,
+            //         file_descriptors: [],
+            //         search_doc_ids: [],
+            //         retrieval_options: {}
+            //     })
+            // });
 
             await processStream(chatRes, writer, encoder, traceId, modelCfg.id);
             success = true;

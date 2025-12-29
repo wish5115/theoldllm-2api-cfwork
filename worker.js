@@ -122,7 +122,7 @@ const CONFIG = {
   // 模型映射表
   // type: 0 = Persona 模式 (需要创建 Session)
   // type: 1 = Proxy 模式 (直接调用 Proxy 接口)
-  MODELS:  [...[
+  MODELS: convertModelsToLegacyFormat(ALL_MODELS) || [
     // --- OpenAI 系列 (Persona 模式) ---
     { id: "gpt-5.2", persona_id: 2064, type: 0, tokens: 398976, name: "GPT-5.2 (Experimental)" },
     { id: "gpt-5.1", persona_id: 2116, type: 0, tokens: 270976, name: "GPT-5.1 (Next-Gen)" },
@@ -144,7 +144,7 @@ const CONFIG = {
     { id: "gemini-2.5-flash", type: 1, tokens: 500000, name: "Gemini 2.5 Flash" },
     { id: "gemini-claude-opus-4-5-thinking", type: 1, tokens: 200000, name: "Claude 4.5 (Thinking Mode)" },
     { id: "deepseek-r1", persona_id: 1031, type: 0, tokens: 128000, name: "DeepSeek R1 (Thinking)" }
-  ], ...convertModelsToLegacyFormat(ALL_MODELS)],
+  ],
   
   RETRY_LIMIT: 2,
 };
@@ -575,7 +575,7 @@ function handleUI(request, apiKey) {
             <div class="box">
                 <span class="label">模型映射 (含 Token 限制)</span>
                 <select id="model-select" style="width:100%; background:#000; color:var(--primary); border:1px solid var(--border); padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">
-                    ${CONFIG.MODELS.map(m => `<option value="${m.id}">${m.name} (${Math.floor(m.tokens/1000)}k)</option>`).join('')}
+                    ${CONFIG.MODELS.map(m => `<option value="${m.id}">${m.name}<!-- (${Math.floor(m.tokens/1000)}k)--></option>`).join('')}
                 </select>
             </div>
             <div class="box" style="font-size:0.75rem; color:var(--text-dim); line-height:1.6;">

@@ -122,7 +122,7 @@ const CONFIG = {
   // 模型映射表
   // type: 0 = Persona 模式 (需要创建 Session)
   // type: 1 = Proxy 模式 (直接调用 Proxy 接口)
-  MODELS: convertModelsToLegacyFormat(allNewModels) || [
+  MODELS: convertModelsToLegacyFormat(ALL_MODELS) || [
     // --- OpenAI 系列 (Persona 模式) ---
     { id: "gpt-5.2", persona_id: 2064, type: 0, tokens: 398976, name: "GPT-5.2 (Experimental)" },
     { id: "gpt-5.1", persona_id: 2116, type: 0, tokens: 270976, name: "GPT-5.1 (Next-Gen)" },

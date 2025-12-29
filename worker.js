@@ -114,7 +114,7 @@ function getPerfectHeaders(type = "biz", env = {}) {  // 添加 env 参数
 
   // 优先使用环境变量，如果没有则使用配置中的默认值
   const userToken = env.API_MASTER_KEY && env.API_MASTER_KEY!=="1" ? env.API_MASTER_KEY : '';
-  const tenantToken = userToken || env.TENANT_TOKEN || env. || CONFIG.TENANT_TOKEN;
+  const tenantToken = userToken || env.TENANT_TOKEN || CONFIG.TENANT_TOKEN;
 
   return {
     ...base,
@@ -275,14 +275,8 @@ async function handleChat(request, env) {
                         
                         // 检测是否为 Base64 图片
                         if (url.startsWith('data:image/')) {
-                            // 方案 1: 跳过 Base64 图片（暂不支持）
-                            if (isWebUI) {
-                                await writer.write(encoder.encode(
-                                    `data: ${JSON.stringify({ debug: "⚠️ 检测到 Base64 图片，上游 API 暂不支持，已忽略" })}\n\n`
-                                ));
-                            }
                             // 可选：在消息中添加提示
-                            messageText += "\n[注：已忽略一张 Base64 编码的图片]";
+                            messageText += "\n[系统提示：检测到图片附件，但当前不支持 Base64 格式，已忽略]";
                         } else {
                             // HTTP(S) URL 图片正常处理
                             fileDescriptors.push({

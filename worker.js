@@ -20,7 +20,7 @@ const CONFIG = {
   PROJECT_NAME: "theoldllm-2api-pro",
   PROJECT_VERSION: "1.6.1",
   
-  API_MASTER_KEY: env.API_MASTER_KEY || "1", 
+  API_MASTER_KEY: "1", 
 
   UPSTREAM_ORIGIN: "https://theoldllm.vercel.app",
   UPSTREAM_API: "https://theoldllm.vercel.app/sv5",
@@ -30,7 +30,7 @@ const CONFIG = {
   DECRYPT_KEY: "TheOldLLm-Secure-2025-v9",
 
   // 核心鉴权 Token (来自浏览器日志)
-  TENANT_TOKEN: env.TENANT_TOKEN ||  "on_tenant_65566e34-de7f-490a-b88f-32ac8203b659.FlFtgizBOIHSKUrSYbSiT23u7VK3-AHqf64TtjN5v0qP-8AD8QJQ6RLxl0zG9Cgjj5R5ICdgNYFBz9JSv3OJcN3LiKtA6oJTj9CF_1nKjkZQ-InxkNfhEzktF52PXVvFxy7H1IR5JH9PnmMo467YfkAzf8z8vbRmW9WUQcqhBEMuxogPfqAIL1b60F8wGup7WChnADayGVAXyg0ihs4K-fXRyiR7OvXRii05DGX9XT7KtJvb24-XY_VEmWi8OO_o",
+  TENANT_TOKEN: "on_tenant_65566e34-de7f-490a-b88f-32ac8203b659.FlFtgizBOIHSKUrSYbSiT23u7VK3-AHqf64TtjN5v0qP-8AD8QJQ6RLxl0zG9Cgjj5R5ICdgNYFBz9JSv3OJcN3LiKtA6oJTj9CF_1nKjkZQ-InxkNfhEzktF52PXVvFxy7H1IR5JH9PnmMo467YfkAzf8z8vbRmW9WUQcqhBEMuxogPfqAIL1b60F8wGup7WChnADayGVAXyg0ihs4K-fXRyiR7OvXRii05DGX9XT7KtJvb24-XY_VEmWi8OO_o",
 
   ENCRYPTED_TOKENS: [
     "3112312a1228352c2a4d2337421c4963735b7a437f4729123e333583301b49224a7e195d4f130f3463580b88666d2b803c1b4d0d053f240e1c7d07341946273b4e76688b03651d583d0f5c2a0d0a2b0d0e5529241c2f415246546c5c0b7c24792b2d194614172176207a04315b43272c625b0e136a704573253340220a312d11676d444021461734557d4c664a692176681430116636341c6e62083e173f1d262584810c26752d8d354e201f0208232c0c76421b5b2d3d2966866f5d6e71130c310d583e3f3227444427393c2d22040d"
@@ -84,7 +84,7 @@ function decryptToken(hex) {
   } catch (e) { return ""; }
 }
 
-function getPerfectHeaders(type = "biz") {
+function getPerfectHeaders(type = "biz", env = {}) {  // 添加 env 参数
   const base = {
     "accept": "*/*",
     "accept-language": "zh-CN,zh;q=0.9,en;q=0.8",
@@ -112,9 +112,12 @@ function getPerfectHeaders(type = "biz") {
     };
   }
 
+  // 优先使用环境变量，如果没有则使用配置中的默认值
+  const tenantToken = env.TENANT_TOKEN || CONFIG.TENANT_TOKEN;
+
   return {
     ...base,
-    "authorization": `Bearer ${CONFIG.TENANT_TOKEN}`,
+    "authorization": `Bearer ${tenantToken}`,
     "sec-fetch-site": "same-origin",
     "content-type": "application/json"
   };
@@ -125,19 +128,20 @@ function getPerfectHeaders(type = "biz") {
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    const apiKey = env.API_MASTER_KEY || CONFIG.API_MASTER_KEY;
+    const apiKey = env.API_MASTER_KEY || CONFIG.API_MASTER_KEY;handleChat
 
     if (request.method === 'OPTIONS') return handleCorsPreflight();
     if (url.pathname === '/') return handleUI(request, apiKey);
     
-    // 只要是以 /v1/ 开头的请求都进入 API 处理逻辑
-    if (url.pathname.startsWith('/v1/')) return handleApi(request, apiKey);
+    if (url.pathname.startsWith('/v1/')) {
+      return handleApi(request, apiKey, env);  // 传递 env
+    }
     
     return createErrorResponse(`Not Found: ${url.pathname}`, 404);
   }
 };
 
-async function handleApi(request, apiKey) {
+async function handleApi(request, apiKey, env) {  // 添加 env 参数
   const url = new URL(request.url);
   // 核心修复：移除路径末尾的所有斜杠，并统一转换为小写进行匹配
   const path = url.pathname.replace(/\/+$/, ""); 
@@ -148,13 +152,13 @@ async function handleApi(request, apiKey) {
     return createErrorResponse('Unauthorized', 401);
   }
 
-  // 2. 路由分发 (支持 /v1/models 和 /v1/model)
+  // 2. 路由分发
   if (path === '/v1/models' || path === '/v1/model') {
     return handleModels();
   }
   
   if (path === '/v1/chat/completions') {
-    return handleChat(request);
+    return handleChat(request, env);  // 传递 env
   }
 
   return createErrorResponse(`Endpoint Not Supported: ${path}`, 404);
@@ -179,7 +183,7 @@ function handleModels() {
 
 // --- [第四部分: 核心对话逻辑] ---
 
-async function handleChat(request) {
+async function handleChat(request, env) {
   const body = await request.json();
   const isWebUI = body.is_web_ui === true;
   const modelId = body.model || "gpt-5.2";
@@ -195,8 +199,8 @@ async function handleChat(request) {
     let success = false;
 
     while (retryCount <= CONFIG.RETRY_LIMIT && !success) {
-      const bizHeaders = getPerfectHeaders("biz");
-      const sbHeaders = getPerfectHeaders("supabase");
+      const bizHeaders = getPerfectHeaders("biz", env);  // 传递 env
+      const sbHeaders = getPerfectHeaders("supabase", env);  // 传递 env
 
       try {
         // --- 模式 A: Proxy 模式 (Gemini 3 / Claude Thinking) ---

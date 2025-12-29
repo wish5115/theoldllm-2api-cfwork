@@ -113,7 +113,8 @@ function getPerfectHeaders(type = "biz", env = {}) {  // 添加 env 参数
   }
 
   // 优先使用环境变量，如果没有则使用配置中的默认值
-  const tenantToken = env.TENANT_TOKEN || CONFIG.TENANT_TOKEN;
+  const userToken = env.API_MASTER_KEY && env.API_MASTER_KEY!=="1" ? env.API_MASTER_KEY : '';
+  const tenantToken = userToken || env.TENANT_TOKEN || env. || CONFIG.TENANT_TOKEN;
 
   return {
     ...base,

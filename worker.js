@@ -2,7 +2,7 @@
  * =================================================================================
  * 项目: theoldllm-2api-pro (Ultimate Absolute Zero Edition)
  * 版本: 1.6.1 (代号: Onyx - The Final Protocol)
- * 作者: 首席AI执行官 (Principal AI Executive Officer)
+ * 作者: 首席AI执行官 (Principal AI Executive Officer) Modify by Wilson
  * 协议: 奇美拉协议 · 终极复刻版
  * 日期: 2025-12-28
  * 
@@ -15,9 +15,89 @@
  * =================================================================================
  */
 
+// 模型配置
+// OpenAI 模型列表（全部绑定到 p5 企业服务）
+const openaiModels = [
+  { id: "ent-gpt-5.2", name: "GPT-5.2", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-5.2" },
+  { id: "ent-gpt-5.1", name: "GPT-5.1", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-5.1" },
+  { id: "ent-gpt-5", name: "GPT-5", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-5" },
+  { id: "ent-gpt-5-mini", name: "GPT-5 Mini", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-5-mini" },
+  { id: "ent-gpt-5-nano", name: "GPT-5 Nano", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-5-nano" },
+  { id: "ent-o4-mini", name: "O4 Mini", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "o4-mini" },
+  { id: "ent-o3", name: "O3", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "o3" },
+  { id: "ent-o3-mini", name: "O3 Mini", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "o3-mini" },
+  { id: "ent-o1", name: "O1", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "o1" },
+  { id: "ent-o1-preview", name: "O1 Preview", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "o1-preview" },
+  { id: "ent-o1-mini", name: "O1 Mini", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "o1-mini" },
+  { id: "ent-gpt-4.1", name: "GPT-4.1", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4.1" },
+  { id: "ent-gpt-4o", name: "GPT-4o", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4o" },
+  { id: "ent-gpt-4o-2024-08-06", name: "GPT-4o (2024-08-06)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4o-2024-08-06" },
+  { id: "ent-gpt-4o-mini", name: "GPT-4o Mini", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4o-mini" },
+  { id: "ent-gpt-4-turbo", name: "GPT-4 Turbo", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4-turbo" },
+  { id: "ent-gpt-4-turbo-preview", name: "GPT-4 Turbo Preview", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4-turbo-preview" },
+  { id: "ent-gpt-4", name: "GPT-4", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4" },
+  { id: "ent-gpt-4-1106-preview", name: "GPT-4 1106 Preview", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4-1106-preview" },
+  { id: "ent-gpt-4-vision-preview", name: "GPT-4 Vision Preview", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4-vision-preview" },
+  { id: "ent-gpt-4-0613", name: "GPT-4 (0613)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4-0613" },
+  { id: "ent-gpt-4-0314", name: "GPT-4 (0314)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4-0314" },
+  { id: "ent-gpt-4-32k-0314", name: "GPT-4 32K (0314)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4-32k-0314" },
+  { id: "ent-gpt-3.5-turbo", name: "GPT-3.5 Turbo", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-3.5-turbo" },
+  { id: "ent-gpt-3.5-turbo-0125", name: "GPT-3.5 Turbo (0125)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-3.5-turbo-0125" },
+  { id: "ent-gpt-3.5-turbo-1106", name: "GPT-3.5 Turbo (1106)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-3.5-turbo-1106" },
+  { id: "ent-gpt-3.5-turbo-16k", name: "GPT-3.5 Turbo 16K", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-3.5-turbo-16k" },
+  { id: "ent-gpt-3.5-turbo-0613", name: "GPT-3.5 Turbo (0613)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-3.5-turbo-0613" },
+  { id: "ent-gpt-3.5-turbo-16k-0613", name: "GPT-3.5 Turbo 16K (0613)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-3.5-turbo-16k-0613" },
+  { id: "ent-gpt-3.5-turbo-0301", name: "GPT-3.5 Turbo (0301)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-3.5-turbo-0301" }
+];
+
+// Anthropic 模型列表（全部绑定到 p5）
+const anthropicModels = [
+  { id: "ent-claude-opus-4.5", name: "Claude Opus 4.5", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-opus-4-5" },
+  { id: "ent-claude-opus-4.5-20251101", name: "Claude Opus 4.5 (20251101)", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-opus-4-5-20251101" },
+  { id: "ent-claude-opus-4.1", name: "Claude Opus 4.1", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-opus-4-1" },
+  { id: "ent-claude-opus-4.1-20250805", name: "Claude Opus 4.1 (20250805)", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-opus-4-1-20250805" },
+  { id: "ent-claude-opus-4", name: "Claude Opus 4", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-opus-4-20250514" },
+  { id: "ent-claude-4-opus", name: "Claude 4 Opus", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-4-opus-20250514" },
+  { id: "ent-claude-sonnet-4.5", name: "Claude Sonnet 4.5", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-sonnet-4-5" },
+  { id: "ent-claude-sonnet-4.5-20250929", name: "Claude Sonnet 4.5 (20250929)", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-sonnet-4-5-20250929" },
+  { id: "ent-claude-sonnet-4", name: "Claude Sonnet 4", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-sonnet-4-20250514" },
+  { id: "ent-claude-4-sonnet", name: "Claude 4 Sonnet", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-4-sonnet-20250514" },
+  { id: "ent-claude-3.7-sonnet", name: "Claude 3.7 Sonnet", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-7-sonnet-latest" },
+  { id: "ent-claude-3.7-sonnet-20250219", name: "Claude 3.7 Sonnet (20250219)", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-7-sonnet-20250219" },
+  { id: "ent-claude-3.5-sonnet", name: "Claude 3.5 Sonnet", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-5-sonnet-latest" },
+  { id: "ent-claude-haiku-4.5", name: "Claude Haiku 4.5", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-haiku-4-5" },
+  { id: "ent-claude-haiku-4.5-20251001", name: "Claude Haiku 4.5 (20251001)", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-haiku-4-5-20251001" },
+  { id: "ent-claude-3.5-haiku", name: "Claude 3.5 Haiku", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-5-haiku-latest" },
+  { id: "ent-claude-3.5-haiku-20241022", name: "Claude 3.5 Haiku (20241022)", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-5-haiku-20241022" },
+  { id: "ent-claude-3-opus", name: "Claude 3 Opus", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-opus-latest" },
+  { id: "ent-claude-3-opus-20240229", name: "Claude 3 Opus (20240229)", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-opus-20240229" },
+  { id: "ent-claude-3-haiku", name: "Claude 3 Haiku", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-haiku-20240307" }
+];
+
+// Google / Anthropic 混合模型（用于 p7 通用服务）
+const universalModels = [
+  { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", provider: "Google", apiProvider: "p7" },
+  { id: "gemini-2.5-flash-lite", name: "Gemini 2.5 Flash Lite", provider: "Google", apiProvider: "p7" },
+  { id: "gemini-claude-opus-4-5-thinking", name: "Claude Opus 4.5 Thinking", provider: "Anthropic", apiProvider: "p7", thinkingModel: "gemini-claude-opus-4-5-thinking" },
+  { id: "gemini-claude-sonnet-4-5-thinking", name: "Claude Sonnet 4.5 Thinking", provider: "Anthropic", apiProvider: "p7", thinkingModel: "gemini-claude-sonnet-4-5-thinking" }
+];
+
+// 其他厂商模型（用于 p8 高级网关）
+const advancedGatewayModels = [
+  { id: "deepseek-v3.1-terminus", name: "DeepSeek V3.1 Terminus", provider: "DeepSeek", apiProvider: "p8" },
+  { id: "glm-4.6", name: "GLM-4.6", provider: "Zhipu", apiProvider: "p8" },
+  { id: "kimi-k2-thinking", name: "Kimi K2 Thinking", provider: "Moonshot", apiProvider: "p8", thinkingModel: "kimi-k2-thinking" },
+  { id: "kimi-k2-instruct", name: "Kimi K2 Instruct", provider: "Moonshot", apiProvider: "p8" },
+  { id: "minimax-m2", name: "Minimax M2", provider: "Minimax", apiProvider: "p8" },
+  { id: "mistral-nemotron", name: "Mistral Nemotron", provider: "Mistral", apiProvider: "p8" },
+  { id: "qwen/qwen3-next-80b-a3b-instruct", name: "Qwen 3 Next 80B Instruct", provider: "Alibaba", apiProvider: "p8" }
+];
+
+const ALL_MODELS = [...openaiModels, ...anthropicModels, ...universalModels, ...advancedGatewayModels];
+
 // --- [第一部分: 核心配置] ---
 const CONFIG = {
-  PROJECT_NAME: "theoldllm-2api-pro",
+  PROJECT_NAME: "theoldllm-api-pro",
   PROJECT_VERSION: "1.6.1",
   
   API_MASTER_KEY: "1", 
@@ -42,7 +122,7 @@ const CONFIG = {
   // 模型映射表
   // type: 0 = Persona 模式 (需要创建 Session)
   // type: 1 = Proxy 模式 (直接调用 Proxy 接口)
-  MODELS: [
+  MODELS: convertModelsToLegacyFormat(allNewModels) || [
     // --- OpenAI 系列 (Persona 模式) ---
     { id: "gpt-5.2", persona_id: 2064, type: 0, tokens: 398976, name: "GPT-5.2 (Experimental)" },
     { id: "gpt-5.1", persona_id: 2116, type: 0, tokens: 270976, name: "GPT-5.1 (Next-Gen)" },
@@ -70,6 +150,20 @@ const CONFIG = {
 };
 
 // --- [第二部分: 核心算法] ---
+
+function convertModelsToLegacyFormat(allNewModels) {
+  if(!allNewModels) return null;
+  return allNewModels.map(model => ({
+    id: model.id,
+    name: model.name,
+    type: (model.apiProvider === 'p7' || model.apiProvider === 'p8') ? 1 : 0,
+    tokens: model.tokens || 200000,
+    provider: model.provider,
+    apiProvider: model.apiProvider,
+    llmProvider: model.llmProvider,
+    llmVersion: model.llmVersion
+  }));
+}
 
 function decryptToken(hex) {
   try {
@@ -207,8 +301,8 @@ async function handleChat(request, env) {
         // --- 模式 A: Proxy 模式 (Gemini 3 / Claude Thinking) ---
         if (modelCfg.type === 1) {
             if (isWebUI) await writer.write(encoder.encode(`data: ${JSON.stringify({ debug: "正在通过 P7 代理网关建立连接..." })}\n\n`));
-            
-            const proxyRes = await fetch(CONFIG.PROXY_API, {
+            const proxyUrl = `${CONFIG.UPSTREAM_ORIGIN}/api/proxy?provider=${modelCfg.apiProvider}`;  // 改这里
+            const proxyRes = await fetch(proxyUrl, {
                 method: 'POST',
                 headers: bizHeaders,
                 body: JSON.stringify({
@@ -233,8 +327,10 @@ async function handleChat(request, env) {
                     name: `${modelCfg.id} Agent v${Math.floor(Math.random()*9000)+1000}`,
                     description: "Direct chat with Provider",
                     system_prompt: "You are a helpful assistant.",
-                    llm_model_provider_override: modelCfg.id.includes('claude') ? "Anthropic" : "OpenAI",
-                    llm_model_version_override: modelCfg.id,
+                    llm_model_provider_override: modelCfg.provider || 'Unkown',  // 改这里
+                    llm_model_version_override: modelCfg.llmVersion || modelCfg.id,  // 改这里
+                    // llm_model_provider_override: modelCfg.id.includes('claude') ? "Anthropic" : "OpenAI",
+                    // llm_model_version_override: modelCfg.id,
                     is_public: false,
                     num_chunks: 0
                 })

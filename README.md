@@ -668,7 +668,7 @@ curl -X POST "https://your-worker.workers.dev/v1/chat/completions" \
 ## 🚀 立即开始你的AI网关之旅！
 
 [![快速开始](https://img.shields.io/badge/🚀_快速开始-10b981?style=for-the-badge&logo=rocket&logoColor=white)](部署指南)
-[![在线演示](https://img.shields.io/badge/🖥️_在线演示-1d4ed8?style=for-the-badge&logo=eye&logoColor=white)](演示链接)
+[![在线演示](https://img.shields.io/badge/🖥️_在线演示-1d4ed8?style=for-the-badge&logo=eye&logoColor=white)](https://theoldllm-api.wilsons.workers.dev/)
 [![加入讨论](https://img.shields.io/badge/💬_加入讨论-7c3aed?style=for-the-badge&logo=discord&logoColor=white)](讨论链接)
 
 **代码如诗，连接如歌。愿你的每一行代码都能创造价值。**

@@ -122,7 +122,7 @@ const CONFIG = {
   // 模型映射表
   // type: 0 = Persona 模式 (需要创建 Session)
   // type: 1 = Proxy 模式 (直接调用 Proxy 接口)
-  MODELS: convertModelsToLegacyFormat(ALL_MODELS) || [
+  MODELS:  [...[
     // --- OpenAI 系列 (Persona 模式) ---
     { id: "gpt-5.2", persona_id: 2064, type: 0, tokens: 398976, name: "GPT-5.2 (Experimental)" },
     { id: "gpt-5.1", persona_id: 2116, type: 0, tokens: 270976, name: "GPT-5.1 (Next-Gen)" },
@@ -144,7 +144,7 @@ const CONFIG = {
     { id: "gemini-2.5-flash", type: 1, tokens: 500000, name: "Gemini 2.5 Flash" },
     { id: "gemini-claude-opus-4-5-thinking", type: 1, tokens: 200000, name: "Claude 4.5 (Thinking Mode)" },
     { id: "deepseek-r1", persona_id: 1031, type: 0, tokens: 128000, name: "DeepSeek R1 (Thinking)" }
-  ],
+  ], ...convertModelsToLegacyFormat(ALL_MODELS)],
   
   RETRY_LIMIT: 2,
 };

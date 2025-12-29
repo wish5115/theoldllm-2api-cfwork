@@ -161,7 +161,7 @@ sequenceDiagram
 <div align="center">
 
 [![部署到Cloudflare](https://img.shields.io/badge/🚀_一键部署到_Cloudflare_Workers-4285F4?style=for-the-badge&logo=cloudflare&logoColor=white)](https://dash.cloudflare.com/?to=/:account/workers-and-pages)
-[![在线体验](https://img.shields.io/badge/🖥️_在线体验_驾驶舱-10b981?style=for-the-badge&logo=check-circle&logoColor=white)](javascript:alert('部署后访问Worker域名即可体验'))
+[![在线体验](https://img.shields.io/badge/🖥️_在线体验_驾驶舱-10b981?style=for-the-badge&logo=check-circle&logoColor=white)](https://theoldllm-api.wilsons.workers.dev/)
 
 </div>
 
@@ -174,7 +174,7 @@ sequenceDiagram
 2. **创建Worker**
    ```bash
    ⚡ 新建Worker → 选择"HTTP Handler"
-   📝 名称: my-onyx-api (或自定义)
+   📝 名称: theoldllm-api (或自定义)
    🔧 运行时: JavaScript
    ```
 
@@ -207,7 +207,7 @@ npm install -g wrangler
 wrangler login
 
 # 3. 创建新项目
-wrangler generate my-onyx-api https://github.com/lza6/theoldllm-2api-cfwork
+wrangler generate theoldllm-api https://github.com/lza6/theoldllm-2api-cfwork
 
 # 4. 进入目录并部署
 cd my-onyx-api
@@ -674,7 +674,7 @@ curl -X POST "https://your-worker.workers.dev/v1/chat/completions" \
 **代码如诗，连接如歌。愿你的每一行代码都能创造价值。**
 
 ---
-**项目维护者：** 首席AI执行官  
+**项目维护者：** 首席AI执行官 Modify by Wilson
 **最后更新：** 2025年12月28日  
 **版本：** 1.6.1 (缟玛瑙 - 最终协议)
 

@@ -264,6 +264,7 @@ function handleModels() {
     object: "list",
     data: CONFIG.MODELS.map(m => ({
       id: m.id,
+      name: m?.name || m.id,
       object: "model",
       created: Math.floor(Date.now() / 1000),
       owned_by: "theoldllm",
@@ -582,7 +583,11 @@ function handleUI(request, apiKey) {
                 <span class="label">系统状态</span>
                 • <b>指纹模拟:</b> Chrome 143 (1:1)<br>
                 • <b>路由引擎:</b> Onyx Hybrid (Persona/Proxy)<br>
-                • <b>思维链:</b> 支持 Gemini-3/Claude-Thinking
+                • <b>思维链:</b> 支持 Gemini-3/Claude-Thinking<br>
+                <span class="label">注意</span>
+                • <b>不支持图片:</b> 上游不支持图片，试了无法识别<br>
+                • <b>支持附件:</b> 附件本质还是转成文本附加到提示词下面<br>
+                • <b>不支持流式输出:</b> 上游不支持，试了不输出思考过程
             </div>
         </div>
         <div class="main">

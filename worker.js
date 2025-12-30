@@ -5,6 +5,7 @@
  * 作者: 首席AI执行官 (Principal AI Executive Officer) Modify by Wilson
  * 协议: 奇美拉协议 · 终极复刻版
  * 日期: 2025-12-28
+ * 来源：本项目改自 https://github.com/lza6/theoldllm-2api-cfwork
  * 
  * [核心修正日志 v1.6.1]
  * 1. [修复] 路由分发：优化 /v1/models 匹配逻辑，支持单复数及末尾斜杠，解决 Cherry Studio 等软件识别问题。
@@ -586,8 +587,7 @@ function handleUI(request, apiKey) {
                 • <b>思维链:</b> 支持 Gemini-3/Claude-Thinking<br><br>
                 <span class="label">注意事项</span>
                 • <b>不支持图片:</b> 因为上游不支持图片，试了无法识别<br>
-                • <b>支持附件:</b> 附件本质还是转成文本附加到提示词下面<br>
-                • <b>不支持流式输出:</b> 因为上游不支持，试了不输出思考过程<br>
+                • <b>支持附件:</b> y因为附件本质还是转成文本附加到提示词下面<br>                • <b>支持附件:</b> yin'wei附件本质还是转成文本附加到提示词r>
                 • <b>模型ID显示错误:</b> gemini-claude-前缀的其实是claude，可能上游模型id写错了
             </div>
         </div>

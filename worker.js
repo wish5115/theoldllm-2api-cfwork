@@ -583,11 +583,12 @@ function handleUI(request, apiKey) {
                 <span class="label">系统状态</span>
                 • <b>指纹模拟:</b> Chrome 143 (1:1)<br>
                 • <b>路由引擎:</b> Onyx Hybrid (Persona/Proxy)<br>
-                • <b>思维链:</b> 支持 Gemini-3/Claude-Thinking<br>
+                • <b>思维链:</b> 支持 Gemini-3/Claude-Thinking<br><br>
                 <span class="label">注意事项</span>
-                • <b>不支持图片:</b> 上游不支持图片，试了无法识别<br>
+                • <b>不支持图片:</b> 因为上游不支持图片，试了无法识别<br>
                 • <b>支持附件:</b> 附件本质还是转成文本附加到提示词下面<br>
-                • <b>不支持流式输出:</b> 上游不支持，试了不输出思考过程
+                • <b>不支持流式输出:</b> 因为上游不支持，试了不输出思考过程<br>
+                • <b>模型ID显示错误</b> gemini-claude-前缀的其实是claude，可能上游模型id写错了
             </div>
         </div>
         <div class="main">

@@ -619,6 +619,7 @@ function handleUI(request, apiKey) {
                 <div class="input-area">
                     <textarea id="user-input" rows="2" placeholder="输入消息，Ctrl+Enter 发送..."></textarea>
                     <button id="send-btn">发送</button>
+                    <button onclick="clearConversation()" style="background:#444;color:#fff;">清空</button>
                 </div>
             </div>
             <div class="log-panel" id="log-box">
@@ -653,24 +654,30 @@ function handleUI(request, apiKey) {
             alert('已复制到剪贴板');
         }
 
+        // 在 <script> 标签开头添加历史记录数组
+        let conversationHistory = [];
         async function sendMessage() {
             const text = userInput.value.trim();
             if (!text) return;
             userInput.value = '';
             sendBtn.disabled = true;
-            chatBox.innerHTML = '';
+            
+            // ✅ 保留历史显示,不清空
+            // chatBox.innerHTML = '';  // ⚠️ 删除这行
+            
             document.getElementById('status-tag').innerText = '正在处理...';
-            addLog('REQUEST', \`模型: \${modelSelect.value}, 长度: \${text.length}\`);
+            addLog('REQUEST', `模型: ${modelSelect.value}, 长度: ${text.length}`);
+            
+            // ✅ 添加用户消息到历史
+            conversationHistory.push({ role: 'user', content: text });
             
             const userDiv = document.createElement('div');
             userDiv.className = 'msg-user';
             userDiv.textContent = 'User: ' + text;
             chatBox.appendChild(userDiv);
-
             const aiDiv = document.createElement('div');
             aiDiv.className = 'msg-ai';
             chatBox.appendChild(aiDiv);
-
             try {
                 const response = await fetch('/v1/chat/completions', {
                     method: 'POST',
@@ -680,16 +687,14 @@ function handleUI(request, apiKey) {
                     },
                     body: JSON.stringify({
                         model: modelSelect.value,
-                        messages: [{ role: 'user', content: text }],
+                        messages: conversationHistory,  // ✅ 发送完整历史
                         stream: true,
                         is_web_ui: true
                     })
                 });
-
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
                 let fullText = '';
-
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) break;
@@ -713,6 +718,10 @@ function handleUI(request, apiKey) {
                         }
                     }
                 }
+                
+                // ✅ 添加AI回复到历史
+                conversationHistory.push({ role: 'assistant', content: fullText });
+                
                 addLog('SUCCESS', '响应流接收完毕');
                 document.getElementById('status-tag').innerText = '就绪';
             } catch (err) {
@@ -723,6 +732,12 @@ function handleUI(request, apiKey) {
             } finally {
                 sendBtn.disabled = false;
             }
+        }
+        // ✅ 添加清空对话按钮(可选)
+        function clearConversation() {
+            conversationHistory = [];
+            chatBox.innerHTML = '<div style="color:var(--text-dim); text-align:center; margin-top:100px;">对话已清空,等待新指令...</div>';
+            addLog('SYSTEM', '对话历史已清空');
         }
         sendBtn.addEventListener('click', sendMessage);
         userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) sendMessage(); });

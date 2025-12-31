@@ -635,113 +635,117 @@ function handleUI(request, apiKey) {
         </div>
     </div>
     <script>
-        const chatBox = document.getElementById('chat-box');
-        const logBox = document.getElementById('log-box');
-        const userInput = document.getElementById('user-input');
-        const sendBtn = document.getElementById('send-btn');
-        const modelSelect = document.getElementById('model-select');
-
-        function addLog(tag, msg) {
-            const div = document.createElement('div');
-            div.className = 'log-item';
-            div.innerHTML = \`<span class="log-time">\${new Date().toLocaleTimeString()}</span><span class="log-tag">[\${tag}]</span><span class="log-msg">\${msg}</span>\`;
-            logBox.appendChild(div);
-            logBox.scrollTop = logBox.scrollHeight;
-        }
-
-        function copy(text) {
-            navigator.clipboard.writeText(text);
-            alert('已复制到剪贴板');
-        }
-
-        // 在 <script> 标签开头添加历史记录数组
-        let conversationHistory = [];
-        async function sendMessage() {
-            const text = userInput.value.trim();
-            if (!text) return;
-            userInput.value = '';
-            sendBtn.disabled = true;
-            
-            // ✅ 保留历史显示,不清空
-            // chatBox.innerHTML = '';  // ⚠️ 删除这行
-            
-            document.getElementById('status-tag').innerText = '正在处理...';
-            addLog('REQUEST', `模型: ${modelSelect.value}, 长度: ${text.length}`);
-            
-            // ✅ 添加用户消息到历史
-            conversationHistory.push({ role: 'user', content: text });
-            
-            const userDiv = document.createElement('div');
-            userDiv.className = 'msg-user';
-            userDiv.textContent = 'User: ' + text;
-            chatBox.appendChild(userDiv);
-            const aiDiv = document.createElement('div');
-            aiDiv.className = 'msg-ai';
-            chatBox.appendChild(aiDiv);
-            try {
-                const response = await fetch('/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ${apiKey}'
-                    },
-                    body: JSON.stringify({
-                        model: modelSelect.value,
-                        messages: conversationHistory,  // ✅ 发送完整历史
-                        stream: true,
-                        is_web_ui: true
-                    })
-                });
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder();
-                let fullText = '';
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-                    const chunk = decoder.decode(value);
-                    const lines = chunk.split('\\n');
-                    for (const line of lines) {
-                        if (line.startsWith('data: ')) {
-                            const dataStr = line.substring(6).trim();
-                            if (dataStr === '[DONE]') continue;
-                            try {
-                                const data = JSON.parse(dataStr);
-                                if (data.debug) { addLog('DEBUG', data.debug); continue; }
-                                if (data.error) { addLog('ERROR', data.error.message); continue; }
-                                const content = data.choices[0].delta.content || '';
-                                fullText += content;
-                                aiDiv.innerHTML = fullText
-                                    .replace(/<think>/g, '<think>')
-                                    .replace(/<\\/think>/g, '</think>');
-                                chatBox.scrollTop = chatBox.scrollHeight;
-                            } catch (e) {}
-                        }
-                    }
-                }
-                
-                // ✅ 添加AI回复到历史
-                conversationHistory.push({ role: 'assistant', content: fullText });
-                
-                addLog('SUCCESS', '响应流接收完毕');
-                document.getElementById('status-tag').innerText = '就绪';
-            } catch (err) {
-                addLog('FATAL', err.message);
-                aiDiv.style.color = 'var(--error)';
-                aiDiv.textContent = 'AI Error: ' + err.message;
-                document.getElementById('status-tag').innerText = '错误';
-            } finally {
-                sendBtn.disabled = false;
-            }
-        }
-        // ✅ 添加清空对话按钮(可选)
-        function clearConversation() {
-            conversationHistory = [];
-            chatBox.innerHTML = '<div style="color:var(--text-dim); text-align:center; margin-top:100px;">对话已清空,等待新指令...</div>';
-            addLog('SYSTEM', '对话历史已清空');
-        }
-        sendBtn.addEventListener('click', sendMessage);
-        userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) sendMessage(); });
-    </script>
+      const chatBox = document.getElementById('chat-box');
+      const logBox = document.getElementById('log-box');
+      const userInput = document.getElementById('user-input');
+      const sendBtn = document.getElementById('send-btn');
+      const modelSelect = document.getElementById('model-select');
+  
+      function addLog(tag, msg) {
+          const div = document.createElement('div');
+          div.className = 'log-item';
+          // ✅ 修复：使用字符串拼接代替模板字符串
+          div.innerHTML = '<span class="log-time">' + new Date().toLocaleTimeString() + '</span><span class="log-tag">[' + tag + ']</span><span class="log-msg">' + msg + '</span>';
+          logBox.appendChild(div);
+          logBox.scrollTop = logBox.scrollHeight;
+      }
+  
+      function copy(text) {
+          navigator.clipboard.writeText(text);
+          alert('已复制到剪贴板');
+      }
+  
+      let conversationHistory = [];
+      
+      async function sendMessage() {
+          const text = userInput.value.trim();
+          if (!text) return;
+          userInput.value = '';
+          sendBtn.disabled = true;
+          
+          document.getElementById('status-tag').innerText = '正在处理...';
+          // ✅ 修复：使用字符串拼接
+          addLog('REQUEST', '模型: ' + modelSelect.value + ', 长度: ' + text.length);
+          
+          conversationHistory.push({ role: 'user', content: text });
+          
+          const userDiv = document.createElement('div');
+          userDiv.className = 'msg-user';
+          userDiv.textContent = 'User: ' + text;
+          chatBox.appendChild(userDiv);
+          
+          const aiDiv = document.createElement('div');
+          aiDiv.className = 'msg-ai';
+          chatBox.appendChild(aiDiv);
+          
+          try {
+              const response = await fetch('/v1/chat/completions', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': 'Bearer ${apiKey}'  // ✅ 这个保留，因为是外层模板字符串的变量
+                  },
+                  body: JSON.stringify({
+                      model: modelSelect.value,
+                      messages: conversationHistory,
+                      stream: true,
+                      is_web_ui: true
+                  })
+              });
+              
+              const reader = response.body.getReader();
+              const decoder = new TextDecoder();
+              let fullText = '';
+              
+              while (true) {
+                  const { done, value } = await reader.read();
+                  if (done) break;
+                  const chunk = decoder.decode(value);
+                  const lines = chunk.split('\\n');
+                  for (const line of lines) {
+                      if (line.startsWith('data: ')) {
+                          const dataStr = line.substring(6).trim();
+                          if (dataStr === '[DONE]') continue;
+                          try {
+                              const data = JSON.parse(dataStr);
+                              if (data.debug) { addLog('DEBUG', data.debug); continue; }
+                              if (data.error) { addLog('ERROR', data.error.message); continue; }
+                              const content = data.choices[0].delta.content || '';
+                              fullText += content;
+                              aiDiv.innerHTML = fullText
+                                  .replace(/<think>/g, '<think>')
+                                  .replace(/<\\/think>/g, '</think>');
+                              chatBox.scrollTop = chatBox.scrollHeight;
+                          } catch (e) {}
+                      }
+                  }
+              }
+              
+              conversationHistory.push({ role: 'assistant', content: fullText });
+              
+              addLog('SUCCESS', '响应流接收完毕');
+              document.getElementById('status-tag').innerText = '就绪';
+          } catch (err) {
+              addLog('FATAL', err.message);
+              aiDiv.style.color = 'var(--error)';
+              aiDiv.textContent = 'AI Error: ' + err.message;
+              document.getElementById('status-tag').innerText = '错误';
+          } finally {
+              sendBtn.disabled = false;
+          }
+      }
+      
+      function clearConversation() {
+          conversationHistory = [];
+          chatBox.innerHTML = '<div style="color:var(--text-dim); text-align:center; margin-top:100px;">对话已清空,等待新指令...</div>';
+          addLog('SYSTEM', '对话历史已清空');
+      }
+      
+      sendBtn.addEventListener('click', sendMessage);
+      userInput.addEventListener('keydown', (e) => { 
+          if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) sendMessage(); 
+      });
+  </script>
 </body>
 </html>`;
   return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });

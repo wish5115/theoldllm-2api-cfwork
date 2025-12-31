@@ -359,24 +359,21 @@ async function handleChat(request, env) {
             const sessionData = await sessionRes.json();
             const sessionId = sessionData.chat_session_id || sessionData.id;
 
-            // 4. 发送消息（支持多模态）
+            // 4. 发送消息（支持多轮对话历史）
             const lastMessage = body.messages.at(-1);
             let messageText = "";
             let fileDescriptors = [];
             
+            // --- 处理多模态内容（图片+文字） ---
             if (Array.isArray(lastMessage.content)) {
                 for (const part of lastMessage.content) {
                     if (part.type === 'text') {
                         messageText += part.text;
                     } else if (part.type === 'image_url') {
                         const url = part.image_url.url;
-                        
-                        // 检测是否为 Base64 图片
                         if (url.startsWith('data:image/')) {
-                            // 可选：在消息中添加提示
                             messageText += "\n[系统提示：检测到图片附件，但当前不支持 Base64 格式，已忽略]";
                         } else {
-                            // HTTP(S) URL 图片正常处理
                             fileDescriptors.push({
                                 id: `img_${Date.now()}_${Math.random().toString(36).slice(2)}`,
                                 type: 'image',
@@ -389,12 +386,28 @@ async function handleChat(request, env) {
                 messageText = lastMessage.content;
             }
             
+            // --- ✅ 关键修复：拼接完整对话历史 ---
+            if (body.messages.length > 1) {
+                const historyContext = body.messages.slice(0, -1).map(msg => {
+                    const role = msg.role === 'user' ? 'User' : 
+                                 msg.role === 'assistant' ? 'Assistant' : 
+                                 msg.role === 'system' ? 'System' : msg.role;
+                    const content = typeof msg.content === 'string' 
+                        ? msg.content 
+                        : msg.content.find(p => p.type === 'text')?.text || '';
+                    return `${role}: ${content}`;
+                }).join('\n\n');
+                
+                // 将历史对话作为上下文前缀
+                messageText = `[对话历史]\n${historyContext}\n\n[当前消息]\nUser: ${messageText}`;
+            }
+            
             const chatRes = await fetch(`${CONFIG.UPSTREAM_API}/chat/send-message`, {
                 method: 'POST',
                 headers: bizHeaders,
                 body: JSON.stringify({
                     chat_session_id: sessionId,
-                    message: messageText,
+                    message: messageText,  // ✅ 现在包含完整历史
                     parent_message_id: null,
                     file_descriptors: fileDescriptors,
                     search_doc_ids: [],
@@ -589,7 +602,9 @@ function handleUI(request, apiKey) {
                 • <b>✗不支持图片:</b> 因为上游不支持图片，试了无法识别<br>
                 • <b>✓支持附件:</b> 因为附件本质还是转成文本附加到提示词下面<br>
                 • <b>✗不支持流式输出:</b> 因为上游不支持，试了不输出思考过程<br>
-                • <b>⚠️模型ID显示错误:</b> gemini-claude-前缀的其实是claude，可能上游模型id写错了
+                • <b>⚠️模型ID显示错误:</b> gemini-claude-前缀的其实是claude，可能上游模型id写错了<br><br>
+                <span class="label">数据来源</span>
+                • <b>上游公益站:</b> https://theoldllm.vercel.app/
             </div>
         </div>
         <div class="main">
@@ -612,6 +627,9 @@ function handleUI(request, apiKey) {
                     <span class="log-tag">[SYSTEM]</span>
                     <span class="log-msg">初始化完成。双模路由引擎已就绪。</span>
                 </div>
+            </div>
+            <div style="text-align: center;font-size: 12px;color: #adb00b;">
+                高速稳定模型齐全的第三方AI平台推荐：<a style="color: #30b83d;" href="https://api.gpt.ge/register?aff=GlNE" target="_blank">V-API</a> 或 <a style="color: #30b83d;" href="https://wzw.pp.ua/register?aff=Upf6" target="_blank">WONG</a>
             </div>
         </div>
     </div>

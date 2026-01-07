@@ -6,7 +6,7 @@
  * 协议: 奇美拉协议 · 终极复刻版
  * 日期: 2025-12-28
  * 来源：本项目改自 https://github.com/lza6/theoldllm-2api-cfwork
- * 
+ *
  * [核心修正日志 v1.6.1]
  * 1. [修复] 路由分发：优化 /v1/models 匹配逻辑，支持单复数及末尾斜杠，解决 Cherry Studio 等软件识别问题。
  * 2. [同步] 全量模型列表：包含 GPT-5.1/5.2, o1, o3, Claude 4, Gemini 3 等。
@@ -18,96 +18,208 @@
 
 // 模型配置
 // OpenAI 模型列表（全部绑定到 p5 企业服务）
-const openaiModels = [
-  { id: "ent-gpt-5.2", name: "GPT-5.2", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-5.2" },
-  { id: "ent-gpt-5.1", name: "GPT-5.1", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-5.1" },
-  { id: "ent-gpt-5", name: "GPT-5", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-5" },
-  { id: "ent-gpt-5-mini", name: "GPT-5 Mini", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-5-mini" },
-  { id: "ent-gpt-5-nano", name: "GPT-5 Nano", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-5-nano" },
-  { id: "ent-o4-mini", name: "O4 Mini", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "o4-mini" },
-  { id: "ent-o3", name: "O3", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "o3" },
-  { id: "ent-o3-mini", name: "O3 Mini", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "o3-mini" },
-  { id: "ent-o1", name: "O1", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "o1" },
-  { id: "ent-o1-preview", name: "O1 Preview", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "o1-preview" },
-  { id: "ent-o1-mini", name: "O1 Mini", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "o1-mini" },
-  { id: "ent-gpt-4.1", name: "GPT-4.1", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4.1" },
-  { id: "ent-gpt-4o", name: "GPT-4o", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4o" },
-  { id: "ent-gpt-4o-2024-08-06", name: "GPT-4o (2024-08-06)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4o-2024-08-06" },
-  { id: "ent-gpt-4o-mini", name: "GPT-4o Mini", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4o-mini" },
-  { id: "ent-gpt-4-turbo", name: "GPT-4 Turbo", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4-turbo" },
-  { id: "ent-gpt-4-turbo-preview", name: "GPT-4 Turbo Preview", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4-turbo-preview" },
-  { id: "ent-gpt-4", name: "GPT-4", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4" },
-  { id: "ent-gpt-4-1106-preview", name: "GPT-4 1106 Preview", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4-1106-preview" },
-  { id: "ent-gpt-4-vision-preview", name: "GPT-4 Vision Preview", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4-vision-preview" },
-  { id: "ent-gpt-4-0613", name: "GPT-4 (0613)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4-0613" },
-  { id: "ent-gpt-4-0314", name: "GPT-4 (0314)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4-0314" },
-  { id: "ent-gpt-4-32k-0314", name: "GPT-4 32K (0314)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4-32k-0314" },
-  { id: "ent-gpt-3.5-turbo", name: "GPT-3.5 Turbo", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-3.5-turbo" },
-  { id: "ent-gpt-3.5-turbo-0125", name: "GPT-3.5 Turbo (0125)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-3.5-turbo-0125" },
-  { id: "ent-gpt-3.5-turbo-1106", name: "GPT-3.5 Turbo (1106)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-3.5-turbo-1106" },
-  { id: "ent-gpt-3.5-turbo-16k", name: "GPT-3.5 Turbo 16K", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-3.5-turbo-16k" },
-  { id: "ent-gpt-3.5-turbo-0613", name: "GPT-3.5 Turbo (0613)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-3.5-turbo-0613" },
-  { id: "ent-gpt-3.5-turbo-16k-0613", name: "GPT-3.5 Turbo 16K (0613)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-3.5-turbo-16k-0613" },
-  { id: "ent-gpt-3.5-turbo-0301", name: "GPT-3.5 Turbo (0301)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-3.5-turbo-0301" }
-];
+// const openaiModels = [
+//   { id: "ent-gpt-5.2", name: "GPT-5.2", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-5.2" },
+//   { id: "ent-gpt-5.1", name: "GPT-5.1", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-5.1" },
+//   { id: "ent-gpt-5", name: "GPT-5", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-5" },
+//   { id: "ent-gpt-5-mini", name: "GPT-5 Mini", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-5-mini" },
+//   { id: "ent-gpt-5-nano", name: "GPT-5 Nano", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-5-nano" },
+//   { id: "ent-o4-mini", name: "O4 Mini", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "o4-mini" },
+//   { id: "ent-o3", name: "O3", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "o3" },
+//   { id: "ent-o3-mini", name: "O3 Mini", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "o3-mini" },
+//   { id: "ent-o1", name: "O1", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "o1" },
+//   { id: "ent-o1-preview", name: "O1 Preview", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "o1-preview" },
+//   { id: "ent-o1-mini", name: "O1 Mini", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "o1-mini" },
+//   { id: "ent-gpt-4.1", name: "GPT-4.1", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4.1" },
+//   { id: "ent-gpt-4o", name: "GPT-4o", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4o" },
+//   { id: "ent-gpt-4o-2024-08-06", name: "GPT-4o (2024-08-06)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4o-2024-08-06" },
+//   { id: "ent-gpt-4o-mini", name: "GPT-4o Mini", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4o-mini" },
+//   { id: "ent-gpt-4-turbo", name: "GPT-4 Turbo", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4-turbo" },
+//   { id: "ent-gpt-4-turbo-preview", name: "GPT-4 Turbo Preview", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4-turbo-preview" },
+//   { id: "ent-gpt-4", name: "GPT-4", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4" },
+//   { id: "ent-gpt-4-1106-preview", name: "GPT-4 1106 Preview", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4-1106-preview" },
+//   { id: "ent-gpt-4-vision-preview", name: "GPT-4 Vision Preview", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4-vision-preview" },
+//   { id: "ent-gpt-4-0613", name: "GPT-4 (0613)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4-0613" },
+//   { id: "ent-gpt-4-0314", name: "GPT-4 (0314)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4-0314" },
+//   { id: "ent-gpt-4-32k-0314", name: "GPT-4 32K (0314)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-4-32k-0314" },
+//   { id: "ent-gpt-3.5-turbo", name: "GPT-3.5 Turbo", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-3.5-turbo" },
+//   { id: "ent-gpt-3.5-turbo-0125", name: "GPT-3.5 Turbo (0125)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-3.5-turbo-0125" },
+//   { id: "ent-gpt-3.5-turbo-1106", name: "GPT-3.5 Turbo (1106)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-3.5-turbo-1106" },
+//   { id: "ent-gpt-3.5-turbo-16k", name: "GPT-3.5 Turbo 16K", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-3.5-turbo-16k" },
+//   { id: "ent-gpt-3.5-turbo-0613", name: "GPT-3.5 Turbo (0613)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-3.5-turbo-0613" },
+//   { id: "ent-gpt-3.5-turbo-16k-0613", name: "GPT-3.5 Turbo 16K (0613)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-3.5-turbo-16k-0613" },
+//   { id: "ent-gpt-3.5-turbo-0301", name: "GPT-3.5 Turbo (0301)", provider: "OpenAI", apiProvider: "p5", llmProvider: "openai", llmVersion: "gpt-3.5-turbo-0301" }
+// ];
 
 // Anthropic 模型列表（全部绑定到 p5）
-const anthropicModels = [
-  { id: "ent-claude-opus-4.5", name: "Claude Opus 4.5", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-opus-4-5" },
-  { id: "ent-claude-opus-4.5-20251101", name: "Claude Opus 4.5 (20251101)", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-opus-4-5-20251101" },
-  { id: "ent-claude-opus-4.1", name: "Claude Opus 4.1", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-opus-4-1" },
-  { id: "ent-claude-opus-4.1-20250805", name: "Claude Opus 4.1 (20250805)", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-opus-4-1-20250805" },
-  { id: "ent-claude-opus-4", name: "Claude Opus 4", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-opus-4-20250514" },
-  { id: "ent-claude-4-opus", name: "Claude 4 Opus", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-4-opus-20250514" },
-  { id: "ent-claude-sonnet-4.5", name: "Claude Sonnet 4.5", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-sonnet-4-5" },
-  { id: "ent-claude-sonnet-4.5-20250929", name: "Claude Sonnet 4.5 (20250929)", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-sonnet-4-5-20250929" },
-  { id: "ent-claude-sonnet-4", name: "Claude Sonnet 4", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-sonnet-4-20250514" },
-  { id: "ent-claude-4-sonnet", name: "Claude 4 Sonnet", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-4-sonnet-20250514" },
-  { id: "ent-claude-3.7-sonnet", name: "Claude 3.7 Sonnet", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-7-sonnet-latest" },
-  { id: "ent-claude-3.7-sonnet-20250219", name: "Claude 3.7 Sonnet (20250219)", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-7-sonnet-20250219" },
-  { id: "ent-claude-3.5-sonnet", name: "Claude 3.5 Sonnet", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-5-sonnet-latest" },
-  { id: "ent-claude-haiku-4.5", name: "Claude Haiku 4.5", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-haiku-4-5" },
-  { id: "ent-claude-haiku-4.5-20251001", name: "Claude Haiku 4.5 (20251001)", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-haiku-4-5-20251001" },
-  { id: "ent-claude-3.5-haiku", name: "Claude 3.5 Haiku", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-5-haiku-latest" },
-  { id: "ent-claude-3.5-haiku-20241022", name: "Claude 3.5 Haiku (20241022)", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-5-haiku-20241022" },
-  { id: "ent-claude-3-opus", name: "Claude 3 Opus", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-opus-latest" },
-  { id: "ent-claude-3-opus-20240229", name: "Claude 3 Opus (20240229)", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-opus-20240229" },
-  { id: "ent-claude-3-haiku", name: "Claude 3 Haiku", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-haiku-20240307" }
-];
+// const anthropicModels = [
+//   { id: "ent-claude-opus-4.5", name: "Claude Opus 4.5", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-opus-4-5" },
+//   { id: "ent-claude-opus-4.5-20251101", name: "Claude Opus 4.5 (20251101)", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-opus-4-5-20251101" },
+//   { id: "ent-claude-opus-4.1", name: "Claude Opus 4.1", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-opus-4-1" },
+//   { id: "ent-claude-opus-4.1-20250805", name: "Claude Opus 4.1 (20250805)", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-opus-4-1-20250805" },
+//   { id: "ent-claude-opus-4", name: "Claude Opus 4", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-opus-4-20250514" },
+//   { id: "ent-claude-4-opus", name: "Claude 4 Opus", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-4-opus-20250514" },
+//   { id: "ent-claude-sonnet-4.5", name: "Claude Sonnet 4.5", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-sonnet-4-5" },
+//   { id: "ent-claude-sonnet-4.5-20250929", name: "Claude Sonnet 4.5 (20250929)", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-sonnet-4-5-20250929" },
+//   { id: "ent-claude-sonnet-4", name: "Claude Sonnet 4", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-sonnet-4-20250514" },
+//   { id: "ent-claude-4-sonnet", name: "Claude 4 Sonnet", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-4-sonnet-20250514" },
+//   { id: "ent-claude-3.7-sonnet", name: "Claude 3.7 Sonnet", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-7-sonnet-latest" },
+//   { id: "ent-claude-3.7-sonnet-20250219", name: "Claude 3.7 Sonnet (20250219)", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-7-sonnet-20250219" },
+//   { id: "ent-claude-3.5-sonnet", name: "Claude 3.5 Sonnet", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-5-sonnet-latest" },
+//   { id: "ent-claude-haiku-4.5", name: "Claude Haiku 4.5", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-haiku-4-5" },
+//   { id: "ent-claude-haiku-4.5-20251001", name: "Claude Haiku 4.5 (20251001)", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-haiku-4-5-20251001" },
+//   { id: "ent-claude-3.5-haiku", name: "Claude 3.5 Haiku", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-5-haiku-latest" },
+//   { id: "ent-claude-3.5-haiku-20241022", name: "Claude 3.5 Haiku (20241022)", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-5-haiku-20241022" },
+//   { id: "ent-claude-3-opus", name: "Claude 3 Opus", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-opus-latest" },
+//   { id: "ent-claude-3-opus-20240229", name: "Claude 3 Opus (20240229)", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-opus-20240229" },
+//   { id: "ent-claude-3-haiku", name: "Claude 3 Haiku", provider: "Anthropic", apiProvider: "p5", llmProvider: "anthropic", llmVersion: "claude-3-haiku-20240307" }
+// ];
 
 // Google / Anthropic 混合模型（用于 p7 通用服务）
-const universalModels = [
-  { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", provider: "Google", apiProvider: "p7" },
-  { id: "gemini-2.5-flash-lite", name: "Gemini 2.5 Flash Lite", provider: "Google", apiProvider: "p7" },
-  { id: "gemini-claude-opus-4-5-thinking", name: "Claude Opus 4.5 Thinking", provider: "Anthropic", apiProvider: "p7", thinkingModel: "gemini-claude-opus-4-5-thinking" },
-  { id: "gemini-claude-sonnet-4-5-thinking", name: "Claude Sonnet 4.5 Thinking", provider: "Anthropic", apiProvider: "p7", thinkingModel: "gemini-claude-sonnet-4-5-thinking" }
+// const universalModels = [
+//   { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", provider: "Google", apiProvider: "p7" },
+//   { id: "gemini-2.5-flash-lite", name: "Gemini 2.5 Flash Lite", provider: "Google", apiProvider: "p7" },
+//   { id: "gemini-claude-opus-4-5-thinking", name: "Claude Opus 4.5 Thinking", provider: "Anthropic", apiProvider: "p7", thinkingModel: "gemini-claude-opus-4-5-thinking" },
+//   { id: "gemini-claude-sonnet-4-5-thinking", name: "Claude Sonnet 4.5 Thinking", provider: "Anthropic", apiProvider: "p7", thinkingModel: "gemini-claude-sonnet-4-5-thinking" }
+// ];
+
+// 多厂商模型（用于 p9 OldLLM API）
+const p9Models = [
+  { id: "nemotron-nano-9b-v2:free", name: "Nemotron Nano 9b V2 Free", provider: "Nvidia", apiProvider: "p9" },
+  { id: "grok-4", name: "Grok 4", provider: "xAI", apiProvider: "p9" },
+  { id: "grok-4.1-fast", name: "Grok 4.1 Fast", provider: "xAI", apiProvider: "p9" },
+  { id: "grok-code-fast-1", name: "Grok Code Fast 1", provider: "xAI", apiProvider: "p9" },
+  { id: "grok-3", name: "Grok 3", provider: "xAI", apiProvider: "p9" },
+  { id: "aion-rp-llama-3.1-8b", name: "Aion RP Llama 3.1 8b", provider: "Aion-labs", apiProvider: "p9" },
+  { id: "qwq-32b-arliai-rpr-v1", name: "QWQ 32b Arliai Rpr V1", provider: "Arliai", apiProvider: "p9" },
+  { id: "deepseek-prover-v2", name: "DeepSeek Prover V2", provider: "DeepSeek", apiProvider: "p9" },
+  { id: "deepseek-r1", name: "DeepSeek R1", provider: "DeepSeek", apiProvider: "p9" },
+  { id: "deepseek-r1-0528", name: "DeepSeek R1 0528", provider: "DeepSeek", apiProvider: "p9" },
+  { id: "deepseek-v3", name: "DeepSeek V3", provider: "DeepSeek", apiProvider: "p9" },
+  { id: "deepseek-v3.1", name: "DeepSeek V3.1", provider: "DeepSeek", apiProvider: "p9" },
+  { id: "deepseek-v3.1-aws", name: "DeepSeek V3.1 AWS", provider: "DeepSeek", apiProvider: "p9" },
+  { id: "deepseek-v3.1-terminus", name: "DeepSeek V3.1 Terminus", provider: "DeepSeek", apiProvider: "p9" },
+  { id: "deepseek-v3.2", name: "DeepSeek V3.2", provider: "DeepSeek", apiProvider: "p9" },
+  { id: "gemini-2.0-flash-001", name: "Gemini 2.0 Flash 001", provider: "Google", apiProvider: "p9" },
+  { id: "gemini-3-flash-preview", name: "Gemini 3 Flash Preview", provider: "Google", apiProvider: "p9" },
+  { id: "gemini-2.0-flash-lite-001", name: "Gemini 2.0 Flash Lite 001", provider: "Google", apiProvider: "p9" },
+  { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", provider: "Google", apiProvider: "p9" },
+  { id: "gemini-2.5-flash-image", name: "Gemini 2.5 Flash Image", provider: "Google", apiProvider: "p9" },
+  { id: "gemini-2.5-flash-lite", name: "Gemini 2.5 Flash Lite", provider: "Google", apiProvider: "p9" },
+  { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", provider: "Google", apiProvider: "p9" },
+  { id: "gemini-3-pro-image-preview", name: "Gemini 3 Pro Image Preview", provider: "Google", apiProvider: "p9" },
+  { id: "gemini-3-pro-preview", name: "Gemini 3 Pro Preview", provider: "Google", apiProvider: "p9" },
+  { id: "kat-coder-pro", name: "Kat Coder Pro", provider: "Kwaipilot", apiProvider: "p9" },
+  { id: "lfm-2.2-6b", name: "LFM 2.2 6b", provider: "Liquid", apiProvider: "p9" },
+  { id: "llama-3.1-8b-instruct", name: "Llama 3.1 8b Instruct", provider: "Meta", apiProvider: "p9" },
+  { id: "llama-3.3-70b-instruct", name: "Llama 3.3 70b Instruct", provider: "Meta", apiProvider: "p9" },
+  { id: "merl", name: "Merl", provider: "Microsoft", apiProvider: "p9" },
+  { id: "devstral-medium", name: "Devstral Medium", provider: "Mistral", apiProvider: "p9" },
+  { id: "devstral-2512:free", name: "Devstral 2512 Free", provider: "Mistral", apiProvider: "p9" },
+  { id: "deepseek-v3.1-nex-n1:free", name: "DeepSeek V3.1 Nex N1 Free", provider: "Nex-agi", apiProvider: "p9" },
+  { id: "minimax-01", name: "Minimax 01", provider: "Minimax", apiProvider: "p9" },
+  { id: "minimax-m1", name: "Minimax M1", provider: "Minimax", apiProvider: "p9" },
+  { id: "minimax-m2", name: "Minimax M2", provider: "Minimax", apiProvider: "p9" },
+  { id: "tng-r1t-chimera:free", name: "TNG R1t Chimera Free", provider: "Tngtech", apiProvider: "p9" },
+  { id: "olmo-3.1-32b-think:free", name: "Olmo 3.1 32b Think Free", provider: "Allenai", apiProvider: "p9", thinkingModel: "olmo-3.1-32b-think:free" },
+  { id: "nemotron-nano-12b-v2-vl:free", name: "Nemotron Nano 12b V2 Vl Free", provider: "Nvidia", apiProvider: "p9" },
+  { id: "tongyi-deepresearch-30b-a3b:free", name: "Tongyi Deepresearch 30b A3b Free", provider: "Alibaba", apiProvider: "p9", isSearch: true },
+  { id: "glm-4.5-air:free", name: "GLM 4.5 Air Free", provider: "Zhipu", apiProvider: "p9" },
+  { id: "dolphin-mistral-24b-venice-edition:free", name: "Dolphin Mistral 24b Venice Edition Free", provider: "Cognitivecomputations", apiProvider: "p9" },
+  { id: "gemma-3n-e2b-it:free", name: "Gemma 3n E2b It Free", provider: "Google", apiProvider: "p9" },
+  { id: "deepseek-r1t2-chimera:free", name: "DeepSeek R1T2 Chimera Free", provider: "Tngtech", apiProvider: "p9" },
+  { id: "magistral-medium-2506:thinking", name: "Magistral Medium 2506 Thinking", provider: "Mistral", apiProvider: "p9", thinkingModel: "magistral-medium-2506:thinking" },
+  { id: "mistral-large-2512", name: "Mistral Large 2512", provider: "Mistral", apiProvider: "p9" },
+  { id: "mistral-medium-3.1", name: "Mistral Medium 3.1", provider: "Mistral", apiProvider: "p9" },
+  { id: "mistral-nemo", name: "Mistral Nemo", provider: "Mistral", apiProvider: "p9" },
+  { id: "mistral-saba", name: "Mistral Saba", provider: "Mistral", apiProvider: "p9" },
+  { id: "mistral-small-3.2-24b-instruct", name: "Mistral Small 3.2 24b Instruct", provider: "Mistral", apiProvider: "p9" },
+  { id: "mixtral-8x22b-instruct", name: "Mixtral 8x22b Instruct", provider: "Mistral", apiProvider: "p9" },
+  { id: "mixtral-8x7b-instruct", name: "Mixtral 8x7b Instruct", provider: "Mistral", apiProvider: "p9" },
+  { id: "kimi-dev-72b", name: "Kimi Dev 72b", provider: "Moonshot", apiProvider: "p9" },
+  { id: "kimi-k2", name: "Kimi K2", provider: "Moonshot", apiProvider: "p9" },
+  { id: "kimi-k2-0905", name: "Kimi K2 0905", provider: "Moonshot", apiProvider: "p9" },
+  { id: "noromaid-20b", name: "Noromaid 20b", provider: "Neversleep", apiProvider: "p9" },
+  { id: "chatgpt-4o-latest", name: "ChatGPT 4o Latest", provider: "OpenAI", apiProvider: "p9" },
+  { id: "gpt-3.5-turbo", name: "GPT 3.5 Turbo", provider: "OpenAI", apiProvider: "p9" },
+  { id: "gpt-4", name: "GPT 4", provider: "OpenAI", apiProvider: "p9" },
+  { id: "gpt-4-turbo", name: "GPT 4 Turbo", provider: "OpenAI", apiProvider: "p9" },
+  { id: "gpt-4-turbo-preview", name: "GPT 4 Turbo Preview", provider: "OpenAI", apiProvider: "p9" },
+  { id: "gpt-4.1", name: "GPT 4.1", provider: "OpenAI", apiProvider: "p9" },
+  { id: "gpt-4.1-mini", name: "GPT 4.1 Mini", provider: "OpenAI", apiProvider: "p9" },
+  { id: "gpt-4.1-nano", name: "GPT 4.1 Nano", provider: "OpenAI", apiProvider: "p9" },
+  { id: "gpt-4o", name: "GPT 4o", provider: "OpenAI", apiProvider: "p9" },
+  { id: "gpt-4o-mini", name: "GPT 4o Mini", provider: "OpenAI", apiProvider: "p9" },
+  { id: "gpt-4o-mini-search-preview", name: "GPT 4o Mini Search Preview", provider: "OpenAI", apiProvider: "p9", isSearch: true },
+  { id: "gpt-4o-search-preview", name: "GPT 4o Search Preview", provider: "OpenAI", apiProvider: "p9", isSearch: true },
+  { id: "gpt-5", name: "GPT 5", provider: "OpenAI", apiProvider: "p9" },
+  { id: "gpt-5-chat", name: "GPT 5 Chat", provider: "OpenAI", apiProvider: "p9" },
+  { id: "gpt-5-chat-latest", name: "GPT 5 Chat Latest", provider: "OpenAI", apiProvider: "p9" },
+  { id: "gpt-5-mini", name: "GPT 5 Mini", provider: "OpenAI", apiProvider: "p9" },
+  { id: "gpt-5-nano", name: "GPT 5 Nano", provider: "OpenAI", apiProvider: "p9" },
+  { id: "gpt-5.1", name: "GPT 5.1", provider: "OpenAI", apiProvider: "p9" },
+  { id: "gpt-5.1-chat-latest", name: "GPT 5.1 Chat Latest", provider: "OpenAI", apiProvider: "p9" },
+  { id: "gpt-5.2", name: "GPT 5.2", provider: "OpenAI", apiProvider: "p9" },
+  { id: "gpt-5.2-chat-latest", name: "GPT 5.2 Chat Latest", provider: "OpenAI", apiProvider: "p9" },
+  { id: "gpt-audio", name: "GPT Audio", provider: "OpenAI", apiProvider: "p9" },
+  { id: "o1", name: "O1", provider: "OpenAI", apiProvider: "p9" },
+  { id: "o3", name: "O3", provider: "OpenAI", apiProvider: "p9" },
+  { id: "o3-mini", name: "O3 Mini", provider: "OpenAI", apiProvider: "p9" },
+  { id: "o4-mini", name: "O4 Mini", provider: "OpenAI", apiProvider: "p9" },
+  { id: "qwen3-14b", name: "Qwen 3 14b", provider: "Alibaba", apiProvider: "p9" },
+  { id: "qwen3-next-80b-a3b-instruct", name: "Qwen 3 Next 80b A3b Instruct", provider: "Alibaba", apiProvider: "p9" },
+  { id: "qwen3-next-80b-a3b-thinking", name: "Qwen 3 Next 80b A3b Thinking", provider: "Alibaba", apiProvider: "p9", thinkingModel: "qwen3-next-80b-a3b-thinking" },
+  { id: "qwen3-235b-a22b", name: "Qwen 3 235b A22b", provider: "Alibaba", apiProvider: "p9" },
+  { id: "qwen3-235b-a22b-07-25", name: "Qwen 3 235b A22b 07 25", provider: "Alibaba", apiProvider: "p9" },
+  { id: "qwen3-32b", name: "Qwen 3 32b", provider: "Alibaba", apiProvider: "p9" },
+  { id: "qwen3-coder", name: "Qwen 3 Coder", provider: "Alibaba", apiProvider: "p9" },
+  { id: "glm-4-32b", name: "GLM 4 32b", provider: "Zhipu", apiProvider: "p9" },
+  { id: "glm-4.5", name: "GLM 4.5", provider: "Zhipu", apiProvider: "p9" },
+  { id: "glm-4.5-air", name: "GLM 4.5 Air", provider: "Zhipu", apiProvider: "p9" },
+  { id: "glm-4.5v", name: "GLM 4.5v", provider: "Zhipu", apiProvider: "p9" },
+  { id: "glm-4.6", name: "GLM 4.6", provider: "Zhipu", apiProvider: "p9" },
+  { id: "glm-4.7", name: "GLM 4.7", provider: "Zhipu", apiProvider: "p9" },
+  { id: "claude-3-haiku", name: "Claude 3 Haiku", provider: "Anthropic", apiProvider: "p9" },
+  { id: "claude-3-opus", name: "Claude 3 Opus", provider: "Anthropic", apiProvider: "p9" },
+  { id: "claude-3.5-haiku", name: "Claude 3.5 Haiku", provider: "Anthropic", apiProvider: "p9" },
+  { id: "claude-3.5-sonnet", name: "Claude 3.5 Sonnet", provider: "Anthropic", apiProvider: "p9" },
+  { id: "claude-3.7-sonnet", name: "Claude 3.7 Sonnet", provider: "Anthropic", apiProvider: "p9" },
+  { id: "claude-haiku-4.5", name: "Claude Haiku 4.5", provider: "Anthropic", apiProvider: "p9" },
+  { id: "claude-opus-4", name: "Claude Opus 4", provider: "Anthropic", apiProvider: "p9" },
+  { id: "claude-opus-4.1", name: "Claude Opus 4.1", provider: "Anthropic", apiProvider: "p9" },
+  { id: "claude-opus-4.5", name: "Claude Opus 4.5", provider: "Anthropic", apiProvider: "p9" },
+  { id: "claude-sonnet-4", name: "Claude Sonnet 4", provider: "Anthropic", apiProvider: "p9" },
+  { id: "claude-sonnet-4.5", name: "Claude Sonnet 4.5", provider: "Anthropic", apiProvider: "p9" },
+  { id: "gpt-oss-120b", name: "GPT Oss 120b", provider: "OpenAI", apiProvider: "p9" },
+  { id: "gpt-oss-20b", name: "GPT Oss 20b", provider: "OpenAI", apiProvider: "p9" }
 ];
 
 // 其他厂商模型（用于 p8 高级网关）
-const advancedGatewayModels = [
-  { id: "deepseek-v3.1-terminus", name: "DeepSeek V3.1 Terminus", provider: "DeepSeek", apiProvider: "p8" },
-  { id: "glm-4.6", name: "GLM-4.6", provider: "Zhipu", apiProvider: "p8" },
-  { id: "kimi-k2-thinking", name: "Kimi K2 Thinking", provider: "Moonshot", apiProvider: "p8", thinkingModel: "kimi-k2-thinking" },
-  { id: "kimi-k2-instruct", name: "Kimi K2 Instruct", provider: "Moonshot", apiProvider: "p8" },
-  { id: "minimax-m2", name: "Minimax M2", provider: "Minimax", apiProvider: "p8" },
-  { id: "mistral-nemotron", name: "Mistral Nemotron", provider: "Mistral", apiProvider: "p8" },
-  { id: "qwen/qwen3-next-80b-a3b-instruct", name: "Qwen 3 Next 80B Instruct", provider: "Alibaba", apiProvider: "p8" }
-];
+// const advancedGatewayModels = [
+//   { id: "deepseek-v3.1-terminus", name: "DeepSeek V3.1 Terminus", provider: "DeepSeek", apiProvider: "p8" },
+//   { id: "glm-4.6", name: "GLM-4.6", provider: "Zhipu", apiProvider: "p8" },
+//   { id: "kimi-k2-thinking", name: "Kimi K2 Thinking", provider: "Moonshot", apiProvider: "p8", thinkingModel: "kimi-k2-thinking" },
+//   { id: "kimi-k2-instruct", name: "Kimi K2 Instruct", provider: "Moonshot", apiProvider: "p8" },
+//   { id: "minimax-m2", name: "Minimax M2", provider: "Minimax", apiProvider: "p8" },
+//   { id: "mistral-nemotron", name: "Mistral Nemotron", provider: "Mistral", apiProvider: "p8" },
+//   { id: "qwen/qwen3-next-80b-a3b-instruct", name: "Qwen 3 Next 80B Instruct", provider: "Alibaba", apiProvider: "p8" }
+// ];
 
-const ALL_MODELS = [...openaiModels, ...anthropicModels, ...universalModels, ...advancedGatewayModels];
+// const ALL_MODELS = [...openaiModels, ...anthropicModels, ...universalModels, ...advancedGatewayModels, ...p9Models];
+const ALL_MODELS = p9Models;
 
 // --- [第一部分: 核心配置] ---
 const CONFIG = {
   PROJECT_NAME: "theoldllm-api-pro",
   PROJECT_VERSION: "1.6.1",
-  
-  API_MASTER_KEY: "1", 
+
+  API_MASTER_KEY: "1",
 
   UPSTREAM_ORIGIN: "https://theoldllm.vercel.app",
   UPSTREAM_API: "https://theoldllm.vercel.app/sv5",
   PROXY_API: "https://theoldllm.vercel.app/api/proxy?provider=p7",
   SUPABASE_RPC: "https://ifoybzchxzhgngmgubem.supabase.co/rest/v1/rpc/increment_counter",
-  
+
   DECRYPT_KEY: "TheOldLLm-Secure-2025-v9",
 
   // 核心鉴权 Token (来自浏览器日志)
@@ -132,7 +244,7 @@ const CONFIG = {
     { id: "o3-mini", persona_id: 1260, type: 0, tokens: 198976, name: "OpenAI o3-mini" },
     { id: "gpt-4o", persona_id: 1378, type: 0, tokens: 126976, name: "GPT-4o" },
     { id: "gpt-4.1", persona_id: 1378, type: 0, tokens: 1046552, name: "GPT-4.1 (Ultra Context)" },
-    
+
     // --- Anthropic 系列 (Persona 模式) ---
     { id: "claude-opus-4-5", persona_id: 6701, type: 0, tokens: 198976, name: "Claude 4.5 Opus" },
     { id: "claude-3-7-sonnet-latest", persona_id: 1426, type: 0, tokens: 198976, name: "Claude 3.7 Sonnet" },
@@ -146,7 +258,7 @@ const CONFIG = {
     { id: "gemini-claude-opus-4-5-thinking", type: 1, tokens: 200000, name: "Claude 4.5 (Thinking Mode)" },
     { id: "deepseek-r1", persona_id: 1031, type: 0, tokens: 128000, name: "DeepSeek R1 (Thinking)" }
   ],
-  
+
   RETRY_LIMIT: 2,
 };
 
@@ -157,7 +269,7 @@ function convertModelsToLegacyFormat(allNewModels) {
   return allNewModels.map(model => ({
     id: model.id,
     name: model.name,
-    type: (model.apiProvider === 'p7' || model.apiProvider === 'p8') ? 1 : 0,
+    type: (model.apiProvider === 'p7' || model.apiProvider === 'p8' || model.apiProvider === 'p9') ? 1 : 0,
     tokens: model.tokens || 200000,
     provider: model.provider,
     apiProvider: model.apiProvider,
@@ -186,7 +298,7 @@ function getPerfectHeaders(type = "biz", env = {}) {  // 添加 env 参数
     "user-agent": CONFIG.UA,
     "sec-ch-ua": CONFIG.SEC_CH_UA,
     "sec-ch-ua-mobile": "?0",
-    "sec-ch-ua-platform": '"Windows"',
+    "sec-ch-ua-platform": '"macOS"',  // 调整为 macOS，与 curl 示例一致
     "sec-fetch-dest": "empty",
     "sec-fetch-mode": "cors",
     "priority": "u=1, i",
@@ -228,11 +340,11 @@ export default {
 
     if (request.method === 'OPTIONS') return handleCorsPreflight();
     if (url.pathname === '/') return handleUI(request, apiKey);
-    
+
     if (url.pathname.startsWith('/v1/')) {
       return handleApi(request, apiKey, env);  // 传递 env
     }
-    
+
     return createErrorResponse(`Not Found: ${url.pathname}`, 404);
   }
 };
@@ -240,7 +352,7 @@ export default {
 async function handleApi(request, apiKey, env) {  // 添加 env 参数
   const url = new URL(request.url);
   // 核心修复：移除路径末尾的所有斜杠，并统一转换为小写进行匹配
-  const path = url.pathname.replace(/\/+$/, ""); 
+  const path = url.pathname.replace(/\/+$/, "");
 
   // 1. 鉴权校验
   const authHeader = request.headers.get('Authorization');
@@ -252,7 +364,7 @@ async function handleApi(request, apiKey, env) {  // 添加 env 参数
   if (path === '/v1/models' || path === '/v1/model') {
     return handleModels();
   }
-  
+
   if (path === '/v1/chat/completions') {
     return handleChat(request, env);  // 传递 env
   }
@@ -271,10 +383,10 @@ function handleModels() {
       owned_by: "theoldllm",
       context_window: m.tokens
     }))
-  }), { 
-    headers: corsHeaders({ 
-      "Content-Type": "application/json; charset=utf-8" 
-    }) 
+  }), {
+    headers: corsHeaders({
+      "Content-Type": "application/json; charset=utf-8"
+    })
   });
 }
 
@@ -286,7 +398,7 @@ async function handleChat(request, env) {
   const modelId = body.model || "gpt-5.2";
   const modelCfg = CONFIG.MODELS.find(m => m.id === modelId) || CONFIG.MODELS[0];
   const traceId = `onyx-${crypto.randomUUID()}`;
-  
+
   const { readable, writable } = new TransformStream();
   const writer = writable.getWriter();
   const encoder = new TextEncoder();
@@ -302,11 +414,16 @@ async function handleChat(request, env) {
       try {
         // --- 模式 A: Proxy 模式 (Gemini 3 / Claude Thinking) ---
         if (modelCfg.type === 1) {
-            if (isWebUI) await writer.write(encoder.encode(`data: ${JSON.stringify({ debug: "正在通过 P7 代理网关建立连接..." })}\n\n`));
-            const proxyUrl = `${CONFIG.UPSTREAM_ORIGIN}/api/proxy?provider=${modelCfg.apiProvider}`;  // 改这里
+            if (isWebUI) await writer.write(encoder.encode(`data: ${JSON.stringify({ debug: "正在通过代理网关建立连接..." })}\n\n`));
+            // 使用模型配置中的 apiProvider 作为 provider 参数
+            const proxyUrl = `${CONFIG.UPSTREAM_ORIGIN}/api/proxy?provider=${modelCfg.apiProvider}`;
             const proxyRes = await fetch(proxyUrl, {
                 method: 'POST',
-                headers: bizHeaders,
+                headers: {
+                  ...bizHeaders,
+                  "cache-control": "no-cache",
+                  "pragma": "no-cache"
+                },
                 body: JSON.stringify({
                     model: modelCfg.id,
                     messages: body.messages,
@@ -317,7 +434,7 @@ async function handleChat(request, env) {
             if (!proxyRes.ok) throw new Error(`Proxy Error: ${proxyRes.status}`);
             await processStream(proxyRes, writer, encoder, traceId, modelCfg.id);
             success = true;
-        } 
+        }
         // --- 模式 B: Persona 模式 (GPT-5 / o1 / o3) ---
         else {
             // 1. 激活 Persona
@@ -363,7 +480,7 @@ async function handleChat(request, env) {
             const lastMessage = body.messages.at(-1);
             let messageText = "";
             let fileDescriptors = [];
-            
+
             // --- 处理多模态内容（图片+文字） ---
             if (Array.isArray(lastMessage.content)) {
                 for (const part of lastMessage.content) {
@@ -385,23 +502,23 @@ async function handleChat(request, env) {
             } else {
                 messageText = lastMessage.content;
             }
-            
+
             // --- ✅ 关键修复：拼接完整对话历史 ---
             if (body.messages.length > 1) {
                 const historyContext = body.messages.slice(0, -1).map(msg => {
-                    const role = msg.role === 'user' ? 'User' : 
-                                 msg.role === 'assistant' ? 'Assistant' : 
+                    const role = msg.role === 'user' ? 'User' :
+                                 msg.role === 'assistant' ? 'Assistant' :
                                  msg.role === 'system' ? 'System' : msg.role;
-                    const content = typeof msg.content === 'string' 
-                        ? msg.content 
+                    const content = typeof msg.content === 'string'
+                        ? msg.content
                         : msg.content.find(p => p.type === 'text')?.text || '';
                     return `${role}: ${content}`;
                 }).join('\n\n');
-                
+
                 // 将历史对话作为上下文前缀
                 messageText = `[对话历史]\n${historyContext}\n\n[当前消息]\nUser: ${messageText}`;
             }
-            
+
             const chatRes = await fetch(`${CONFIG.UPSTREAM_API}/chat/send-message`, {
                 method: 'POST',
                 headers: bizHeaders,
@@ -471,10 +588,10 @@ async function processStream(response, writer, encoder, traceId, modelId) {
 
         for (const line of lines) {
             if (!line.trim() || line.includes('data: [DONE]')) continue;
-            
+
             let jsonString = line;
             if (line.startsWith('data: ')) jsonString = line.substring(6);
-            
+
             try {
                 const json = JSON.parse(jsonString);
                 let content = "";
@@ -483,7 +600,7 @@ async function processStream(response, writer, encoder, traceId, modelId) {
                 // 适配两种上游格式
                 const obj = json.obj || json;
                 const choices = obj.choices?.[0];
-                
+
                 // 提取思维链
                 reasoning = choices?.delta?.reasoning_content || obj?.reasoning_content || "";
                 // 提取正文
@@ -640,7 +757,7 @@ function handleUI(request, apiKey) {
       const userInput = document.getElementById('user-input');
       const sendBtn = document.getElementById('send-btn');
       const modelSelect = document.getElementById('model-select');
-  
+
       function addLog(tag, msg) {
           const div = document.createElement('div');
           div.className = 'log-item';
@@ -649,35 +766,35 @@ function handleUI(request, apiKey) {
           logBox.appendChild(div);
           logBox.scrollTop = logBox.scrollHeight;
       }
-  
+
       function copy(text) {
           navigator.clipboard.writeText(text);
           alert('已复制到剪贴板');
       }
-  
+
       let conversationHistory = [];
-      
+
       async function sendMessage() {
           const text = userInput.value.trim();
           if (!text) return;
           userInput.value = '';
           sendBtn.disabled = true;
-          
+
           document.getElementById('status-tag').innerText = '正在处理...';
           // ✅ 修复：使用字符串拼接
           addLog('REQUEST', '模型: ' + modelSelect.value + ', 长度: ' + text.length);
-          
+
           conversationHistory.push({ role: 'user', content: text });
-          
+
           const userDiv = document.createElement('div');
           userDiv.className = 'msg-user';
           userDiv.textContent = 'User: ' + text;
           chatBox.appendChild(userDiv);
-          
+
           const aiDiv = document.createElement('div');
           aiDiv.className = 'msg-ai';
           chatBox.appendChild(aiDiv);
-          
+
           try {
               const response = await fetch('/v1/chat/completions', {
                   method: 'POST',
@@ -692,11 +809,11 @@ function handleUI(request, apiKey) {
                       is_web_ui: true
                   })
               });
-              
+
               const reader = response.body.getReader();
               const decoder = new TextDecoder();
               let fullText = '';
-              
+
               while (true) {
                   const { done, value } = await reader.read();
                   if (done) break;
@@ -720,9 +837,9 @@ function handleUI(request, apiKey) {
                       }
                   }
               }
-              
+
               conversationHistory.push({ role: 'assistant', content: fullText });
-              
+
               addLog('SUCCESS', '响应流接收完毕');
               document.getElementById('status-tag').innerText = '就绪';
           } catch (err) {
@@ -734,16 +851,16 @@ function handleUI(request, apiKey) {
               sendBtn.disabled = false;
           }
       }
-      
+
       function clearConversation() {
           conversationHistory = [];
           chatBox.innerHTML = '<div style="color:var(--text-dim); text-align:center; margin-top:100px;">对话已清空,等待新指令...</div>';
           addLog('SYSTEM', '对话历史已清空');
       }
-      
+
       sendBtn.addEventListener('click', sendMessage);
-      userInput.addEventListener('keydown', (e) => { 
-          if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) sendMessage(); 
+      userInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) sendMessage();
       });
   </script>
 </body>

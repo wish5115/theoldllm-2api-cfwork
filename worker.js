@@ -747,7 +747,7 @@ function handleUI(request, apiKey) {
                 </div>
             </div>
             <div style="text-align: center;font-size: 12px;color: #adb00b;">
-                高速稳定模型齐全的第三方AI平台推荐：<a style="color: #30b83d;" href="https://api.gpt.ge/register?aff=GlNE" target="_blank">V-API</a> 或 <a style="color: #30b83d;" href="https://wzw.pp.ua/register?aff=Upf6" target="_blank">WONG</a>
+                高速稳定模型齐全的第三方AI平台推荐：<a style="color: #30b83d;" href="https://api.vectorengine.ai/register?aff=JBmK" target="_blank">向量AI</a> 或 <a style="color: #30b83d;" href="https://api.gpt.ge/register?aff=GlNE" target="_blank">V-API</a> 或 <a style="color: #30b83d;" href="https://wzw.pp.ua/register?aff=Upf6" target="_blank">WONG</a>
             </div>
         </div>
     </div>
